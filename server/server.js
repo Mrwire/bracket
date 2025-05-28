@@ -128,6 +128,32 @@ app.post('/api/bracket/match/:id', (req, res) => {
 
     const { match, roundIndex, matchIndex } = matchData;
     
+    // Helper function to recursively reset subsequent matches
+    function resetSubsequentMatches(bracketData, roundIndex, matchIndex) {
+      if (roundIndex >= bracketData.rounds.length - 1) return; // Stop at the final round
+      
+      const nextMatch = getNextMatch(bracketData, roundIndex, matchIndex);
+      if (!nextMatch) return;
+      
+      console.log(`Recursive reset: Round ${nextMatch.roundIndex}, Match ${nextMatch.matchIndex}`);
+      
+      // Reset the team in the appropriate position
+      nextMatch.match.teams[nextMatch.position] = {
+        name: null,
+        score: 0,
+        image: null
+      };
+      
+      // Reset the match status if it was completed
+      if (nextMatch.match.completed) {
+        nextMatch.match.completed = false;
+        nextMatch.match.winner = null;
+        
+        // Continue resetting subsequent matches
+        resetSubsequentMatches(bracketData, nextMatch.roundIndex, nextMatch.matchIndex);
+      }
+    }
+
     if (reset) {
       // Reset match scores and completion status
       match.teams.forEach(team => {
@@ -136,28 +162,37 @@ app.post('/api/bracket/match/:id', (req, res) => {
       match.winner = null;
       match.completed = false;
       
-      // Reset subsequent matches if they contain this match's winner
+      // Reset subsequent matches if this match affects them
       if (roundIndex < bracketData.rounds.length - 1) {
         const nextMatch = getNextMatch(bracketData, roundIndex, matchIndex);
-        if (nextMatch && nextMatch.match.teams[nextMatch.position].name === match.teams[match.winner]?.name) {
-          // Clear the team in the next match
-          nextMatch.match.teams[nextMatch.position] = {
-            name: null,
-            score: 0,
-            image: null
-          };
+        if (nextMatch) {
+          console.log(`Resetting next match: Round ${nextMatch.roundIndex}, Match ${nextMatch.matchIndex}, Position ${nextMatch.position}`);
           
-          // Reset that match too if it's completed
-          if (nextMatch.match.completed) {
-            // Recursive reset of all subsequent matches
-            const resetBody = { reset: true };
-            const resetReq = { params: { id: nextMatch.match.id }, body: resetBody };
-            const resetRes = { json: () => {}, status: () => ({ json: () => {} }) };
-            app.routes.post.forEach(route => {
-              if (route.path === '/api/bracket/match/:id') {
-                route.callbacks[0](resetReq, resetRes);
-              }
-            });
+          // Get names of teams in current match
+          const currentTeamNames = match.teams.map(team => team.name).filter(Boolean);
+          
+          // Check if the team in the next match position came from this match
+          if (nextMatch.match.teams[nextMatch.position].name && 
+              currentTeamNames.includes(nextMatch.match.teams[nextMatch.position].name)) {
+            
+            console.log(`Clearing team ${nextMatch.match.teams[nextMatch.position].name} from next match`);
+            
+            // Clear the team in the next match
+            nextMatch.match.teams[nextMatch.position] = {
+              name: null,
+              score: 0,
+              image: null
+            };
+            
+            // If next match was completed, reset it too
+            if (nextMatch.match.completed) {
+              console.log(`Next match was completed, resetting it too`);
+              nextMatch.match.completed = false;
+              nextMatch.match.winner = null;
+              
+              // Recursive reset: manually process next matches
+              resetSubsequentMatches(bracketData, nextMatch.roundIndex, nextMatch.matchIndex);
+            }
           }
         }
       }
@@ -191,11 +226,54 @@ app.post('/api/bracket/match/:id', (req, res) => {
   }
 });
 
+// POST /api/bracket/reset-all - Reset all scores and matches
+app.post('/api/bracket/reset-all', (req, res) => {
+  try {
+    console.log('Resetting all bracket scores');
+    const bracketData = JSON.parse(fs.readFileSync(bracketFilePath, 'utf8'));
+    
+    // Reset all matches
+    bracketData.rounds.forEach(round => {
+      round.matches.forEach(match => {
+        // Keep team names but reset scores and completion status
+        match.teams.forEach(team => {
+          if (team.name) {
+            team.score = 0;
+          }
+        });
+        match.winner = null;
+        match.completed = false;
+      });
+    });
+    
+    // For rounds after the first one, reset all teams
+    for (let i = 1; i < bracketData.rounds.length; i++) {
+      bracketData.rounds[i].matches.forEach(match => {
+        match.teams.forEach(team => {
+          team.name = null;
+          team.score = 0;
+          team.image = null;
+        });
+      });
+    }
+    
+    // Save the updated bracket
+    fs.writeFileSync(bracketFilePath, JSON.stringify(bracketData, null, 2));
+    
+    return res.json({ success: true, message: 'All scores and matches have been reset' });
+  } catch (error) {
+    console.error('Error resetting all scores:', error);
+    return res.status(500).json({ error: 'Failed to reset bracket data' });
+  }
+});
+
 // DELETE /api/bracket/match/:id - Reset a match score and propagate changes
 app.delete('/api/bracket/match/:id', (req, res) => {
+  console.log('DELETE request received for match:', req.params.id);
   const matchId = parseInt(req.params.id);
   
   if (!matchId) {
+    console.error('Invalid match ID:', req.params.id);
     return res.status(400).json({ error: 'Missing match ID' });
   }
 
@@ -236,14 +314,26 @@ app.delete('/api/bracket/match/:id', (req, res) => {
           
           // If next match was completed, reset it too
           if (nextMatch.match.completed) {
-            // Use delete endpoint recursively
-            const deleteReq = { params: { id: nextMatch.match.id } };
-            const deleteRes = { json: () => {}, status: () => ({ json: () => {} }) };
-            app.routes.delete.forEach(route => {
-              if (route.path === '/api/bracket/match/:id') {
-                route.callbacks[0](deleteReq, deleteRes);
+            // Directly reset the next match in memory
+            nextMatch.match.teams.forEach(team => {
+              if (team.name) {
+                team.score = 0;
               }
             });
+            nextMatch.match.winner = null;
+            nextMatch.match.completed = false;
+            
+            // Reset any potentially affected teams in subsequent matches
+            if (nextMatch.roundIndex < bracketData.rounds.length - 1) {
+              const nextNextMatch = getNextMatch(bracketData, nextMatch.roundIndex, nextMatch.matchIndex);
+              if (nextNextMatch && nextNextMatch.match.teams[nextNextMatch.position].name === nextTeam.name) {
+                nextNextMatch.match.teams[nextNextMatch.position] = {
+                  name: null,
+                  score: 0,
+                  image: null
+                };
+              }
+            }
           }
         }
       }

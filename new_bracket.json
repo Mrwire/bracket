@@ -1,0 +1,345 @@
+{
+  "rounds": [
+    {
+      "name": "Huitièmes de finale",
+      "matches": [
+        {
+          "id": 1,
+          "teams": [
+            {
+              "name": "KREST",
+              "score": 0,
+              "image": null
+            },
+            {
+              "name": "ANOUARXXI",
+              "score": 0,
+              "image": null
+            }
+          ],
+          "winner": null,
+          "completed": false
+        },
+        {
+          "id": 2,
+          "teams": [
+            {
+              "name": "YURII",
+              "score": 0,
+              "image": null
+            },
+            {
+              "name": "AHMED.R",
+              "score": 0,
+              "image": null
+            }
+          ],
+          "winner": null,
+          "completed": false
+        },
+        {
+          "id": 3,
+          "teams": [
+            {
+              "name": "LENIN",
+              "score": 0,
+              "image": null
+            },
+            {
+              "name": "NOBL1SS",
+              "score": 0,
+              "image": null
+            }
+          ],
+          "winner": null,
+          "completed": false
+        },
+        {
+          "id": 4,
+          "teams": [
+            {
+              "name": "HAZRADEOUS",
+              "score": 0,
+              "image": null
+            },
+            {
+              "name": "Sinisteru",
+              "score": 0,
+              "image": null
+            }
+          ],
+          "winner": null,
+          "completed": false
+        },
+        {
+          "id": 5,
+          "teams": [
+            {
+              "name": "ASTRAI",
+              "score": 0,
+              "image": null
+            },
+            {
+              "name": "DJANGOO",
+              "score": 0,
+              "image": null
+            }
+          ],
+          "winner": null,
+          "completed": false
+        },
+        {
+          "id": 6,
+          "teams": [
+            {
+              "name": "JUBA",
+              "score": 0,
+              "image": null
+            },
+            {
+              "name": "Manojack",
+              "score": 0,
+              "image": null
+            }
+          ],
+          "winner": null,
+          "completed": false
+        },
+        {
+          "id": 7,
+          "teams": [
+            {
+              "name": "YASSINE123",
+              "score": 0,
+              "image": null
+            },
+            {
+              "name": "NEVROOZ",
+              "score": 0,
+              "image": null
+            }
+          ],
+          "winner": null,
+          "completed": false
+        },
+        {
+          "id": 8,
+          "teams": [
+            {
+              "name": "INOKS",
+              "score": 0,
+              "image": null
+            },
+            {
+              "name": "LS",
+              "score": 0,
+              "image": null
+            }
+          ],
+          "winner": null,
+          "completed": false
+        }
+      ]
+    },
+    {
+      "name": "Quarts de finale",
+      "matches": [
+        {
+          "id": 9,
+          "teams": [
+            {
+              "name": null,
+              "score": 0,
+              "image": null
+            },
+            {
+              "name": null,
+              "score": 0,
+              "image": null
+            }
+          ],
+          "winner": null,
+          "completed": false
+        },
+        {
+          "id": 10,
+          "teams": [
+            {
+              "name": null,
+              "score": 0,
+              "image": null
+            },
+            {
+              "name": null,
+              "score": 0,
+              "image": null
+            }
+          ],
+          "winner": null,
+          "completed": false
+        },
+        {
+          "id": 11,
+          "teams": [
+            {
+              "name": null,
+              "score": 0,
+              "image": null
+            },
+            {
+              "name": null,
+              "score": 0,
+              "image": null
+            }
+          ],
+          "winner": null,
+          "completed": false
+        },
+        {
+          "id": 12,
+          "teams": [
+            {
+              "name": null,
+              "score": 0,
+              "image": null
+            },
+            {
+              "name": null,
+              "score": 0,
+              "image": null
+            }
+          ],
+          "winner": null,
+          "completed": false
+        }
+      ]
+    },
+    {
+      "name": "Demi-finales",
+      "matches": [
+        {
+          "id": 13,
+          "teams": [
+            {
+              "name": null,
+              "score": 0,
+              "image": null
+            },
+            {
+              "name": null,
+              "score": 0,
+              "image": null
+            }
+          ],
+          "winner": null,
+          "completed": false
+        },
+        {
+          "id": 14,
+          "teams": [
+            {
+              "name": null,
+              "score": 0,
+              "image": null
+            },
+            {
+              "name": null,
+              "score": 0,
+              "image": null
+            }
+          ],
+          "winner": null,
+          "completed": false
+        }
+      ]
+    },
+    {
+      "name": "Finale",
+      "matches": [
+        {
+          "id": 15,
+          "teams": [
+            {
+              "name": null,
+              "score": 0,
+              "image": null
+            },
+            {
+              "name": null,
+              "score": 0,
+              "image": null
+            }
+          ],
+          "winner": null,
+          "completed": false
+        }
+      ]
+    }
+  ],
+  "participants": [
+    {
+      "name": "KREST",
+      "image": null
+    },
+    {
+      "name": "ANOUARXXI",
+      "image": null
+    },
+    {
+      "name": "YURII",
+      "image": null
+    },
+    {
+      "name": "AHMED.R",
+      "image": null
+    },
+    {
+      "name": "LENIN",
+      "image": null
+    },
+    {
+      "name": "NOBL1SS",
+      "image": null
+    },
+    {
+      "name": "HAZRADEOUS",
+      "image": null
+    },
+    {
+      "name": "Sinisteru",
+      "image": null
+    },
+    {
+      "name": "ASTRAI",
+      "image": null
+    },
+    {
+      "name": "DJANGOO",
+      "image": null
+    },
+    {
+      "name": "JUBA",
+      "image": null
+    },
+    {
+      "name": "Manojack",
+      "image": null
+    },
+    {
+      "name": "YASSINE123",
+      "image": null
+    },
+    {
+      "name": "NEVROOZ",
+      "image": null
+    },
+    {
+      "name": "INOKS",
+      "image": null
+    },
+    {
+      "name": "LS",
+      "image": null
+    }
+  ]
+}

@@ -8,7 +8,7 @@ let bracketData = null;
 let isAdmin = false;
 let participantsData = [];
 // Déterminer si nous sommes en production ou en développement local
-const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? '/api' : 'http://141.94.208.84/api';
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000/api' : 'http://141.94.208.84/api';
 const PASSWORD = 'api123456'; // Password for accessing the application
 const DEFAULT_PARTICIPANT_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZmNjYwMCI+PHBhdGggZD0iTTEyIDEyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00LTQgMS43OS00IDQgMS43OSA0IDQgNHptMCAyYy0yLjY3IDAtOCAxLjM0LTggNHYyaDE2di0yYzAtMi42Ni01LjMzLTQtOC00eiIvPjwvc3ZnPg==';
 
@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const bracketContainer = document.getElementById('bracket-container');
   const scrollLeftBtn = document.getElementById('scrollLeftBtn');
   const scrollRightBtn = document.getElementById('scrollRightBtn');
+  const resetAllBtn = document.getElementById('reset-all-btn');
   if (bracketContainer && scrollLeftBtn && scrollRightBtn) {
     // Scroll buttons
     scrollLeftBtn.addEventListener('click', () => {
@@ -136,6 +137,39 @@ document.addEventListener('DOMContentLoaded', () => {
     activateTab('participants');
   });
   
+  // Reset all scores button (only visible in admin mode)
+  if (resetAllBtn) {
+    resetAllBtn.addEventListener('click', () => {
+      if (confirm('Êtes-vous sûr de vouloir réinitialiser TOUS les scores et tous les matchs? Cette action ne peut pas être annulée.')) {
+        resetAllBtn.disabled = true;
+        resetAllBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Réinitialisation...';
+        
+        fetch(`${API_URL}/bracket/reset-all`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => {
+          if (response.ok) {
+            showSuccess('Tous les scores ont été réinitialisés');
+            setTimeout(fetchBracketData, 500); // Rafraîchir le bracket après un délai
+          } else {
+            throw new Error('Failed to reset all scores');
+          }
+        })
+        .catch(err => {
+          console.error('Error resetting all scores:', err);
+          showError('Erreur lors de la réinitialisation des scores');
+        })
+        .finally(() => {
+          resetAllBtn.disabled = false;
+          resetAllBtn.innerHTML = '<i class="fas fa-undo"></i> Réinitialiser tous les scores';
+        });
+      }
+    });
+  }
+  
   // Check if user has a valid session
   const hasSession = localStorage.getItem('tournament_session');
   if (hasSession) {
@@ -161,6 +195,14 @@ function handleLogin(e) {
   if (password === PASSWORD) {
     // Save session to localStorage
     localStorage.setItem('tournament_session', 'true');
+    // Activer automatiquement le mode admin après une connexion réussie
+    isAdmin = true;
+    
+    // Update URL without refreshing the page
+    const url = new URL(window.location);
+    url.searchParams.set('admin', 'true');
+    window.history.pushState({}, '', url);
+    
     hideLoginScreen();
     initializeApp();
   } else {
@@ -348,76 +390,152 @@ function renderBracket(data) {
  * Render a single match
  * @param {Object} match - The match data
  * @param {number} roundIndex - The round index
+ * @param {number} matchIndex - The match index
  * @returns {HTMLElement} - The match element
  */
 function renderMatch(match, roundIndex, matchIndex) {
-  const matchEl = document.createElement('div');
-  matchEl.className = `match match-${matchIndex + 1}${match.completed ? ' completed' : ''}`;
-  matchEl.dataset.id = match.id;
-  matchEl.dataset.round = roundIndex + 1;
-  matchEl.dataset.match = matchIndex + 1;
-  
-  // Create team elements
-  match.teams.forEach((team, teamIndex) => {
-    const teamEl = document.createElement('div');
-    teamEl.className = 'team';
-    
-    // Add winner/loser class if match is completed
-    if (match.completed) {
-      if (match.winner === teamIndex) {
-        teamEl.classList.add('winner');
-      } else {
-        teamEl.classList.add('loser');
-      }
+const matchEl = document.createElement('div');
+matchEl.className = 'match';
+matchEl.dataset.id = match.id;
+matchEl.dataset.round = roundIndex;
+matchEl.dataset.matchIndex = matchIndex;
+
+// Render each team in the match
+match.teams.forEach((team, index) => {
+const teamEl = document.createElement('div');
+teamEl.className = `team ${team.name ? '' : 'empty'}`;
+
+// Add 'winner' or 'loser' class if match is completed
+if (match.completed && team.name) {
+if (match.winner === index) {
+teamEl.classList.add('winner');
+} else {
+teamEl.classList.add('loser');
+}
+}
+
+// Add team image if available
+if (team.image) {
+const imageEl = document.createElement('div');
+imageEl.className = 'team-image';
+imageEl.style.backgroundImage = `url(${team.image})`;
+teamEl.appendChild(imageEl);
+} else if (team.name) {
+// Default avatar for participants without image
+const imageEl = document.createElement('div');
+imageEl.className = 'team-image default-avatar';
+imageEl.style.backgroundImage = `url(${DEFAULT_PARTICIPANT_IMAGE})`;
+teamEl.appendChild(imageEl);
+}
+
+// Add team name and score
+const nameEl = document.createElement('span');
+nameEl.className = 'team-name';
+nameEl.textContent = team.name || 'TBD';
+teamEl.appendChild(nameEl);
+
+if (match.completed && team.name) {
+const scoreEl = document.createElement('span');
+scoreEl.className = 'team-score';
+scoreEl.textContent = team.score;
+teamEl.appendChild(scoreEl);
+}
+
+matchEl.appendChild(teamEl);
+});
+
+// Add admin controls for matches
+if (isAdmin && match.teams[0].name && match.teams[1].name) {
+const adminControls = document.createElement('div');
+adminControls.className = 'admin-controls';
+
+if (match.completed) {
+// Créer un bouton "Modifier" pour les matchs complétés
+const editButton = document.createElement('button');
+editButton.className = 'btn btn-primary';
+editButton.textContent = 'Modifier';
+editButton.style.marginRight = '5px';
+
+editButton.onclick = function() {
+const matchForm = createMatchForm(match);
+matchEl.innerHTML = '';
+matchEl.appendChild(matchForm);
+};
+adminControls.appendChild(editButton);
+
+      // Créer un bouton "Reset" simple
+      const resetButton = document.createElement('button');
+      resetButton.className = 'btn btn-danger';
+      resetButton.textContent = 'Reset';
+      
+      resetButton.onclick = function() {
+        if (confirm('Réinitialiser ce match? Cela affectera aussi les matchs suivants.')) {
+          resetButton.disabled = true;
+          resetButton.textContent = 'Réinitialisation...';
+          
+          // Méthode 1: Utiliser DELETE (ancienne approche qui fonctionne peut-être mieux)
+          fetch(`${API_URL}/bracket/match/${match.id}`, {
+            method: 'DELETE'
+          })
+          .then(response => {
+            if (response.ok) {
+              showSuccess('Match réinitialisé');
+              setTimeout(fetchBracketData, 500); // Rafraîchir tout le bracket avec un délai
+            } else {
+              throw new Error('Failed to reset match');
+            }
+          })
+          .catch(err => {
+            console.error('Error resetting match (DELETE):', err);
+            // Fallback: Essayer avec la méthode POST + reset:true
+            fetch(`${API_URL}/bracket/match/${match.id}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                reset: true
+              })
+            })
+            .then(response => {
+              if (response.ok) {
+                showSuccess('Match réinitialisé');
+                setTimeout(fetchBracketData, 500);
+              } else {
+                showError('Erreur lors de la réinitialisation');
+                resetButton.disabled = false;
+                resetButton.textContent = 'Reset';
+              }
+            })
+            .catch(err => {
+              console.error('Reset error (POST):', err);
+              showError('Erreur serveur');
+              resetButton.disabled = false;
+              resetButton.textContent = 'Reset';
+            });
+          });
+        }
+      };
+adminControls.appendChild(resetButton);
+} else {
+// Add edit button for incomplete matches
+const editBtn = document.createElement('button');
+editBtn.className = 'btn btn-primary';
+editBtn.title = 'Éditer ce match';
+editBtn.textContent = 'Éditer';
+
+editBtn.onclick = function() {
+const matchForm = createMatchForm(match);
+matchEl.innerHTML = '';
+matchEl.appendChild(matchForm);
+};
+
+      adminControls.appendChild(editBtn);
     }
-    
-    // Add team info with image if available
-    const teamInfoEl = document.createElement('div');
-    teamInfoEl.className = 'team-info';
-    
-    // Add team image if available
-    if (team.image) {
-      const teamImgEl = document.createElement('img');
-      teamImgEl.className = 'team-image';
-      teamImgEl.src = team.image;
-      teamImgEl.alt = team.name || 'TBD';
-      teamInfoEl.appendChild(teamImgEl);
-      teamEl.classList.add('with-image');
-    } else if (team.name) {
-      // Find participant image from our participants data
-      const participant = participantsData.find(p => p.name === team.name);
-      if (participant && participant.image) {
-        const teamImgEl = document.createElement('img');
-        teamImgEl.className = 'team-image';
-        teamImgEl.src = participant.image;
-        teamImgEl.alt = team.name;
-        teamInfoEl.appendChild(teamImgEl);
-        teamEl.classList.add('with-image');
-      }
-    }
-    
-    const teamNameEl = document.createElement('div');
-    teamNameEl.className = 'team-name';
-    teamNameEl.textContent = team.name || 'TBD';
-    teamInfoEl.appendChild(teamNameEl);
-    
-    teamEl.appendChild(teamInfoEl);
-    
-    const teamScoreEl = document.createElement('div');
-    teamScoreEl.className = 'team-score';
-    teamScoreEl.textContent = team.score;
-    teamEl.appendChild(teamScoreEl);
-    
-    matchEl.appendChild(teamEl);
-  });
-  
-  // Add admin controls for editable matches
-  if (isAdmin && !match.completed && 
-      match.teams[0].name && match.teams[1].name) {
-    const adminControls = createAdminControls(match);
+
     matchEl.appendChild(adminControls);
   }
-  
+
   return matchEl;
 }
 
@@ -591,33 +709,47 @@ function createAdminControls(match) {
 function createMatchForm(match) {
   const form = document.createElement('form');
   form.className = 'match-form';
+  form.dataset.matchId = match.id;
+  
+  // Créer un conteneur pour les inputs de score
+  const inputsContainer = document.createElement('div');
+  inputsContainer.className = 'inputs-container';
   
   // Create score inputs for both teams
   match.teams.forEach((team, index) => {
+    // Ajouter le nom de l'équipe comme label
+    const teamLabel = document.createElement('span');
+    teamLabel.textContent = team.name || 'TBD';
+    teamLabel.className = 'team-label';
+    inputsContainer.appendChild(teamLabel);
+    
     const input = document.createElement('input');
     input.type = 'number';
     input.className = 'input-score';
     input.min = 0;
     input.value = team.score;
     input.dataset.index = index;
-    form.appendChild(input);
+    inputsContainer.appendChild(input);
     
     // Add a label if more than one input
     if (index < match.teams.length - 1) {
       const separator = document.createElement('span');
       separator.textContent = ' - ';
-      form.appendChild(separator);
+      inputsContainer.appendChild(separator);
     }
   });
   
+  form.appendChild(inputsContainer);
+  
   // Create button container
   const btnContainer = document.createElement('div');
-  btnContainer.className = 'admin-controls';
+  btnContainer.className = 'btn-container';
   
   // Create submit button
   const submitBtn = document.createElement('button');
   submitBtn.type = 'submit';
   submitBtn.className = 'btn btn-primary';
+  submitBtn.title = 'Valider';
   submitBtn.textContent = 'Valider';
   btnContainer.appendChild(submitBtn);
   
@@ -625,62 +757,86 @@ function createMatchForm(match) {
   const cancelBtn = document.createElement('button');
   cancelBtn.type = 'button';
   cancelBtn.className = 'btn btn-secondary';
+  cancelBtn.title = 'Annuler';
   cancelBtn.textContent = 'Annuler';
   btnContainer.appendChild(cancelBtn);
   
-  // Create reset button for admin to reset scores
-  const resetBtn = document.createElement('button');
-  resetBtn.type = 'button';
-  resetBtn.className = 'btn btn-danger';
-  resetBtn.textContent = 'Réinitialiser';
-  btnContainer.appendChild(resetBtn);
-  
-  cancelBtn.addEventListener('click', () => {
+  // Fonction pour fermer le formulaire et restaurer l'UI originale
+  function closeForm() {
     // Re-render the match to reset UI
     const matchEl = document.querySelector(`.match[data-id="${match.id}"]`);
-    const parentEl = matchEl.parentElement;
-    const index = Array.from(parentEl.children).indexOf(matchEl);
-    parentEl.replaceChild(
-      renderMatch(match, Array.from(bracketContainer.children).indexOf(parentEl)),
-      matchEl
-    );
-  });
+    const roundIndex = parseInt(matchEl.dataset.round);
+    const matchIndex = parseInt(matchEl.dataset.matchIndex);
+    
+    const newMatchEl = renderMatch(match, roundIndex, matchIndex);
+    matchEl.parentNode.replaceChild(newMatchEl, matchEl);
+  }
   
-  // Handle reset button click
-  resetBtn.addEventListener('click', async () => {
-    if (confirm('Êtes-vous sûr de vouloir réinitialiser ce match ? Cette action affectera également les rounds suivants.')) {
-      try {
-        resetBtn.textContent = 'Réinitialisation...';
+  // Utiliser closeForm pour le bouton d'annulation
+  cancelBtn.onclick = closeForm;
+  
+  // Create reset button (only if both teams have scores)
+  const hasScores = match.teams.some(team => team.score > 0);
+  if (hasScores) {
+    const resetBtn = document.createElement('button');
+    resetBtn.type = 'button';
+    resetBtn.className = 'btn btn-danger';
+    resetBtn.title = 'Réinitialiser les scores';
+    resetBtn.textContent = 'Réinitialiser';
+    btnContainer.appendChild(resetBtn);
+    
+    resetBtn.onclick = function() {
+      if (confirm('Réinitialiser ce match? Cela affectera aussi les matchs suivants.')) {
         resetBtn.disabled = true;
+        resetBtn.textContent = 'Réinitialisation...';
         
-        // Call API to reset match
-        const response = await fetch(`${API_URL}/bracket/match/${match.id}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json'
+        // Méthode 1: Utiliser DELETE (ancienne approche qui fonctionne peut-être mieux)
+        fetch(`${API_URL}/bracket/match/${match.id}`, {
+          method: 'DELETE'
+        })
+        .then(response => {
+          if (response.ok) {
+            showSuccess('Match réinitialisé');
+            setTimeout(fetchBracketData, 500); // Rafraîchir tout le bracket avec un délai
+          } else {
+            throw new Error('Failed to reset match');
           }
+        })
+        .catch(err => {
+          console.error('Error resetting match (DELETE):', err);
+          // Fallback: Essayer avec la méthode POST + reset:true
+          fetch(`${API_URL}/bracket/match/${match.id}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              reset: true
+            })
+          })
+          .then(response => {
+            if (response.ok) {
+              showSuccess('Match réinitialisé');
+              setTimeout(fetchBracketData, 500);
+            } else {
+              showError('Erreur lors de la réinitialisation');
+              resetBtn.disabled = false;
+              resetBtn.textContent = 'Reset';
+            }
+          })
+          .catch(err => {
+            console.error('Reset error (POST):', err);
+            showError('Erreur serveur');
+            resetBtn.disabled = false;
+            resetBtn.textContent = 'Reset';
+          });
         });
-        
-        if (!response.ok) {
-          throw new Error('Failed to reset match');
-        }
-        
-        // Show success message
-        showSuccess('Match réinitialisé avec succès');
-        
-        // Refresh the bracket data
-        fetchBracketData();
-      } catch (error) {
-        console.error('Error resetting match:', error);
-        showError('Erreur lors de la réinitialisation du match');
-        resetBtn.textContent = 'Réinitialiser';
-        resetBtn.disabled = false;
       }
-    }
-  });
+    };
+  }
   
   // Handle form submission
-  form.addEventListener('submit', async (e) => {
+  form.onsubmit = function(e) {
     e.preventDefault();
     
     // Get scores from inputs
@@ -702,35 +858,33 @@ function createMatchForm(match) {
       score: scores[index]
     }));
     
+    submitBtn.textContent = 'Mise à jour...';
+    submitBtn.disabled = true;
+    
     // Call API to update match
-    try {
-      submitBtn.textContent = 'Updating...';
-      submitBtn.disabled = true;
-      
-      const response = await fetch(`${API_URL}/bracket/match/${match.id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          teams: updatedTeams,
-          winner: winnerIndex
-        })
-      });
-      
-      if (!response.ok) {
+    fetch(`${API_URL}/bracket/match/${match.id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        teams: updatedTeams,
+        winner: winnerIndex
+      })
+    }).then(response => {
+      if (response.ok) {
+        showSuccess('Match mis à jour avec succès');
+        fetchBracketData(); // Rafraîchir tout le bracket
+      } else {
         throw new Error('Failed to update match');
       }
-      
-      // Refresh the bracket data
-      fetchBracketData();
-    } catch (error) {
+    }).catch(error => {
       console.error('Error updating match:', error);
       showError('Erreur lors de la mise à jour du match');
       submitBtn.textContent = 'Valider';
       submitBtn.disabled = false;
-    }
-  });
+    });
+  };
   
   form.appendChild(btnContainer);
   return form;

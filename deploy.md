@@ -1,17 +1,17 @@
-# Guide de déploiement sur VPS
+# Guide de déploiement sur VPS 141.94.208.84
 
-Ce guide vous aidera à déployer rapidement l'application Tournament Bracket Manager sur votre VPS.
+Ce guide vous aidera à déployer rapidement l'application Tournament Bracket Manager sur le VPS spécifique 141.94.208.84.
 
 ## Prérequis sur le VPS
 - Node.js (v14+ recommandé)
 - Git
-- PM2 (optionnel, pour maintenir l'application en fonctionnement)
+- PM2 (pour maintenir l'application en fonctionnement)
 
 ## Étapes de déploiement
 
-### 1. Connexion à votre VPS
+### 1. Connexion au VPS
 ```bash
-ssh utilisateur@adresse-ip-vps
+ssh utilisateur@141.94.208.84
 ```
 
 ### 2. Cloner le dépôt GitHub
