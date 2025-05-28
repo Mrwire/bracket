@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: theme('colors.background');
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.bracket-container {
+  @apply flex flex-col md:flex-row items-start justify-center gap-4 p-4 overflow-x-auto;
+  min-width: min-content;
+}
+
+.round {
+  @apply flex flex-col justify-around min-w-[250px];
+}
+
+.match {
+  @apply flex flex-col bg-white rounded-lg shadow-md mb-4 p-2 transition-all;
+}
+
+.match:hover {
+  @apply shadow-lg;
+}
+
+.team {
+  @apply flex items-center justify-between p-2 border-b border-gray-200 last:border-b-0;
+}
+
+.team-name {
+  @apply font-medium truncate max-w-[150px];
+}
+
+.team-score {
+  @apply font-bold text-lg ml-2;
+}
+
+.match.completed {
+  @apply border-l-4 border-secondary;
+}
+
+.team.winner {
+  @apply bg-green-50;
+}
+
+.team.loser {
+  @apply text-gray-500;
+}
+
+.admin-controls {
+  @apply flex items-center justify-end mt-2;
+}
+
+.bracket-line {
+  @apply border-r-2 border-gray-300 h-full;
+}
+
+.input-score {
+  @apply w-12 text-center border border-gray-300 rounded-md p-1;
+}
+
+.btn {
+  @apply px-3 py-1 rounded-md text-white font-medium;
+}
+
+.btn-primary {
+  @apply bg-primary hover:bg-blue-700;
+}
+
+.btn-secondary {
+  @apply bg-secondary hover:bg-green-700;
+}
+
+.btn-disabled {
+  @apply bg-gray-400 cursor-not-allowed;
+}
+
+@media (min-width: 768px) {
+  .bracket-container {
+    height: calc(100vh - 4rem);
+    padding: 2rem;
+  }
+  
+  .round {
+    height: 100%;
+  }
+}

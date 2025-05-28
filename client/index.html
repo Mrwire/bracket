@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tournament Bracket</title>
+  <!-- Google Fonts for futuristic look -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Login Screen -->
+  <div id="login-screen" class="login-screen">
+    <div class="login-box">
+      <h2 class="login-title">Tournament Access</h2>
+      <form id="login-form">
+        <input type="hidden" id="username" value="admin">
+        <input type="password" id="password" class="login-input" placeholder="Enter password" autocomplete="current-password" required>
+        <button type="submit" class="login-button">Access Tournament</button>
+        <div id="login-error" class="login-error"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main Application (initially hidden) -->
+  <div id="app" style="display: none;">
+    <header class="header">
+      <div class="container">
+        <h1 class="title">Tournament Bracket</h1>
+        <div class="nav-links">
+          <a href="#" id="edit-participants-btn" class="admin-link">Edit Participants</a>
+          <a href="#" id="admin-link" class="admin-link">Mode Admin</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <!-- Tabs Navigation -->
+      <div class="tabs">
+        <div class="tab active" data-tab="bracket">Bracket</div>
+        <div class="tab" data-tab="participants">Participants</div>
+        <div class="tab" data-tab="api">API Docs</div>
+      </div>
+
+      <!-- Tournament Info Panel (Winner Display) -->
+      <div id="tournament-info" class="tournament-info"></div>
+
+      <!-- Bracket View Tab -->
+      <div id="bracket-tab" class="tab-content active">
+  <button class="bracket-scroll-btn left" id="scrollLeftBtn" title="Scroll gauche" aria-label="Scroll gauche">&#8592;</button>
+  <button class="bracket-scroll-btn right" id="scrollRightBtn" title="Scroll droite" aria-label="Scroll droite">&#8594;</button>
+  <div id="bracket-container" class="bracket-container"></div>
+        <div id="bracket-container" class="bracket-container"></div>
+      </div>
+
+      <!-- Participants Editor Tab (initially hidden) -->
+      <div id="participants-tab" class="tab-content" style="display: none;">
+        <div class="edit-participants">
+          <h2>Edit Participants</h2>
+          <div id="participants-list" class="participants-list">
+            <!-- Participant items will be inserted here by JavaScript -->
+          </div>
+        </div>
+      </div>
+
+      <!-- API Documentation Tab (initially hidden) -->
+      <div id="api-tab" class="tab-content" style="display: none;">
+        <div class="api-docs">
+          <h2>API Documentation for vMix Integration</h2>
+          <p>Utilisez ces endpoints pour intégrer le tournoi dans vMix ou tout autre outil de production.</p>
+          <h3>Principaux Endpoints (port 3500)</h3>
+          <ul>
+            <li><b>GET</b> <code>http://localhost:3500/api/bracket/current-match</code> — Match en cours (pour affichage live)</li>
+            <li><b>GET</b> <code>http://localhost:3500/api/bracket/final</code> — Gagnant du tournoi</li>
+            <li><b>GET</b> <code>http://localhost:3500/api/bracket</code> — Structure complète du bracket</li>
+            <li><b>GET</b> <code>http://localhost:3500/api/bracket/participants</code> — Liste des participants</li>
+          </ul>
+          <h3>Exemple de réponse pour <code>/api/bracket/current-match</code></h3>
+          <div class="api-code">
+            <pre><span class="code-comment">// Exemple :</span>
+{
+  "round": "Demi-finale",
+  "match": 13,
+  "teams": ["Team A", "Team B"],
+  "score": [2, 1],
+  "images": [null, null]
+}
+</pre>
+          </div>
+          <h3>Exemple d'intégration vMix (HTML/JS)</h3>
+          <div class="api-code">
+            <pre><span class="code-comment">// HTML pour input navigateur vMix</span>
+&lt;script&gt;
+async function fetchCurrentMatch() {
+  const response = await fetch('http://localhost:3500/api/bracket/current-match');
+  if (response.status === 404) return;
+  const data = await response.json();
+  document.getElementById('team1').textContent = data.teams[0] || 'TBD';
+  document.getElementById('team2').textContent = data.teams[1] || 'TBD';
+  document.getElementById('score1').textContent = data.score[0];
+  document.getElementById('score2').textContent = data.score[1];
+}
+fetchCurrentMatch();
+setInterval(fetchCurrentMatch, 5000);
+&lt;/script&gt;
+</pre>
+          </div>
+          <p><b>Remarque :</b> Le mot de passe par défaut pour accéder à l’admin est <code>api123456</code> (modifiable dans <code>client/script.js</code>).</p>
+          <hr>
+          <p>Pour plus d’exemples et la documentation complète, voir le README du projet.</p>
+          <h3>Références API</h3>
+          <ul>
+            <li><b>GET</b> <code>/api/bracket/current-match</code> — Match en cours</li>
+            <li><b>GET</b> <code>/api/bracket/final</code> — Gagnant</li>
+            <li><b>GET</b> <code>/api/bracket</code> — Bracket complet</li>
+            <li><b>GET</b> <code>/api/bracket/participants</code> — Participants</li>
+          </ul>
+
+          "teams": [
+            { "name": "Team 1", "score": 3, "image": "data:image/..." },
+            { "name": "Team 2", "score": 1, "image": null }
+          ],
+          "winner": 0,
+          "completed": true
+        },
+        // More matches...
+      ]
+    },
+    // More rounds...
+  ],
+  "participants": [
+    { "name": "Team 1", "image": "data:image/..." },
+    // More participants...
+  ]
+}</pre>
+            </div>
+          </div>
+          
+          <div class="api-endpoint">
+            <div class="api-endpoint-header">
+              <span class="api-method">GET</span>
+              <span class="api-url">/api/bracket/current-match</span>
+            </div>
+            <div class="api-description">Returns information about the current active match (first incomplete match found).</div>
+            <div class="api-code">
+              <pre><span class="code-comment">// Example response:</span>
+{
+  "round": "Quarts de finale",
+  "match": 9,
+  "teams": ["Team 1", "Team 3"],
+  "score": [0, 0],
+  "images": ["data:image/...", "data:image/..."]
+}</pre>
+            </div>
+          </div>
+          
+          <div class="api-endpoint">
+            <div class="api-endpoint-header">
+              <span class="api-method">GET</span>
+              <span class="api-url">/api/bracket/final</span>
+            </div>
+            <div class="api-description">Returns the tournament winner and final score when the tournament is complete.</div>
+            <div class="api-code">
+              <pre><span class="code-comment">// Example response:</span>
+{
+  "winner": "Team 1",
+  "score": [3, 1],
+  "teams": ["Team 1", "Team 2"],
+  "images": ["data:image/...", "data:image/..."]
+}</pre>
+            </div>
+          </div>
+          
+          <div class="api-endpoint">
+            <div class="api-endpoint-header">
+              <span class="api-method">GET</span>
+              <span class="api-url">/api/bracket/participants</span>
+            </div>
+            <div class="api-description">Returns a list of all participants in the tournament with their names and images.</div>
+            <div class="api-code">
+              <pre><span class="code-comment">// Example response:</span>
+[
+  { "name": "Team 1", "image": "data:image/..." },
+  { "name": "Team 2", "image": null },
+  // More participants...
+]</pre>
+            </div>
+          </div>
+          
+          <h3>vMix Integration</h3>
+          <p>To integrate with vMix, you can use vMix's Web Browser input or Data Sources feature:</p>
+          
+          <ol>
+            <li>
+              <strong>Using Web Browser Input:</strong>
+              <p>Create a web browser input in vMix pointing to a local HTML page that periodically fetches data from these API endpoints and formats it for display.</p>
+            </li>
+            <li>
+              <strong>Using Data Sources:</strong>
+              <p>Set up a vMix Data Source to pull directly from the API endpoints. For example:</p>
+              <ul>
+                <li>Add a new Data Source in vMix of type "Web"</li>
+                <li>Set the URL to "http://localhost:5000/api/bracket/current-match"</li>
+                <li>Set the Refresh Rate to an appropriate value (e.g., 5 seconds)</li>
+                <li>Map JSON fields to vMix title fields, e.g., map "teams[0]" to "Team1Name"</li>
+              </ul>
+            </li>
+          </ol>
+          
+          <h3>Example vMix Integration Code</h3>
+          <div class="api-code">
+            <pre><span class="code-comment">// HTML file for vMix web browser input</span>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;style&gt;
+    body { 
+      background-color: transparent; 
+      color: white;
+      font-family: 'Arial', sans-serif;
+      overflow: hidden;
+    }
+    .match {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+    }
+    .team {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .team-image {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .team-name {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .score {
+      font-size: 36px;
+      font-weight: bold;
+      margin: 0 20px;
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div id="match-display" class="match"&gt;
+    &lt;div class="team team1"&gt;
+      &lt;img id="team1-img" class="team-image" src="" alt=""&gt;
+      &lt;div id="team1-name" class="team-name"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div id="team1-score" class="score"&gt;0&lt;/div&gt;
+    &lt;div&gt;-&lt;/div&gt;
+    &lt;div id="team2-score" class="score"&gt;0&lt;/div&gt;
+    &lt;div class="team team2"&gt;
+      &lt;div id="team2-name" class="team-name"&gt;&lt;/div&gt;
+      &lt;img id="team2-img" class="team-image" src="" alt=""&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;script&gt;
+    // Function to fetch current match data
+    async function fetchCurrentMatch() {
+      try {
+        const response = await fetch('http://localhost:3500/api/bracket/current-match');
+        if (response.status === 404) {
+          // No current match, try to get the final
+          fetchFinal();
+          return;
+        }
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch current match');
+        }
+        
+        const data = await response.json();
+        updateDisplay(data);
+      } catch (error) {
+        console.error('Error fetching match data:', error);
+      }
+    }
+    
+    // Function to fetch final match data
+    async function fetchFinal() {
+      try {
+        const response = await fetch('http://localhost:3500/api/bracket/final');
+        if (!response.ok) {
+          // If no final either, clear the display
+          document.getElementById('team1-name').textContent = 'TBD';
+          document.getElementById('team2-name').textContent = 'TBD';
+          document.getElementById('team1-score').textContent = '0';
+          document.getElementById('team2-score').textContent = '0';
+          return;
+        }
+        
+        const data = await response.json();
+        updateDisplay({
+          teams: data.teams,
+          score: data.score,
+          images: data.images
+        });
+      } catch (error) {
+        console.error('Error fetching final data:', error);
+      }
+    }
+    
+    // Function to update the display with match data
+    function updateDisplay(data) {
+      document.getElementById('team1-name').textContent = data.teams[0] || 'TBD';
+      document.getElementById('team2-name').textContent = data.teams[1] || 'TBD';
+      document.getElementById('team1-score').textContent = data.score[0];
+      document.getElementById('team2-score').textContent = data.score[1];
+      
+      if (data.images && data.images[0]) {
+        document.getElementById('team1-img').src = data.images[0];
+      }
+      
+      if (data.images && data.images[1]) {
+        document.getElementById('team2-img').src = data.images[1];
+      }
+    }
+    
+    // Fetch data initially and then refresh every 5 seconds
+    fetchCurrentMatch();
+    setInterval(fetchCurrentMatch, 5000);
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

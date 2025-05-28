@@ -1,0 +1,601 @@
+{
+  "id": "maxsfk61jupop6uk1",
+  "name": "Tournoi Démo 16 joueurs",
+  "status": "draft",
+  "createdAt": "2025-05-21T10:16:12.505Z",
+  "updatedAt": "2025-05-21T10:16:12.505Z",
+  "participants": [
+    {
+      "id": "player-1",
+      "name": "Participant 1",
+      "seed": 1,
+      "team": "",
+      "avatar": null,
+      "stats": {
+        "wins": 0,
+        "losses": 0,
+        "draws": 0
+      }
+    },
+    {
+      "id": "player-2",
+      "name": "Participant 2",
+      "seed": 2,
+      "team": "",
+      "avatar": null,
+      "stats": {
+        "wins": 0,
+        "losses": 0,
+        "draws": 0
+      }
+    },
+    {
+      "id": "player-3",
+      "name": "Participant 3",
+      "seed": 3,
+      "team": "",
+      "avatar": null,
+      "stats": {
+        "wins": 0,
+        "losses": 0,
+        "draws": 0
+      }
+    },
+    {
+      "id": "player-4",
+      "name": "Participant 4",
+      "seed": 4,
+      "team": "",
+      "avatar": null,
+      "stats": {
+        "wins": 0,
+        "losses": 0,
+        "draws": 0
+      }
+    },
+    {
+      "id": "player-5",
+      "name": "Participant 5",
+      "seed": 5,
+      "team": "",
+      "avatar": null,
+      "stats": {
+        "wins": 0,
+        "losses": 0,
+        "draws": 0
+      }
+    },
+    {
+      "id": "player-6",
+      "name": "Participant 6",
+      "seed": 6,
+      "team": "",
+      "avatar": null,
+      "stats": {
+        "wins": 0,
+        "losses": 0,
+        "draws": 0
+      }
+    },
+    {
+      "id": "player-7",
+      "name": "Participant 7",
+      "seed": 7,
+      "team": "",
+      "avatar": null,
+      "stats": {
+        "wins": 0,
+        "losses": 0,
+        "draws": 0
+      }
+    },
+    {
+      "id": "player-8",
+      "name": "Participant 8",
+      "seed": 8,
+      "team": "",
+      "avatar": null,
+      "stats": {
+        "wins": 0,
+        "losses": 0,
+        "draws": 0
+      }
+    },
+    {
+      "id": "player-9",
+      "name": "Participant 9",
+      "seed": 9,
+      "team": "",
+      "avatar": null,
+      "stats": {
+        "wins": 0,
+        "losses": 0,
+        "draws": 0
+      }
+    },
+    {
+      "id": "player-10",
+      "name": "Participant 10",
+      "seed": 10,
+      "team": "",
+      "avatar": null,
+      "stats": {
+        "wins": 0,
+        "losses": 0,
+        "draws": 0
+      }
+    },
+    {
+      "id": "player-11",
+      "name": "Participant 11",
+      "seed": 11,
+      "team": "",
+      "avatar": null,
+      "stats": {
+        "wins": 0,
+        "losses": 0,
+        "draws": 0
+      }
+    },
+    {
+      "id": "player-12",
+      "name": "Participant 12",
+      "seed": 12,
+      "team": "",
+      "avatar": null,
+      "stats": {
+        "wins": 0,
+        "losses": 0,
+        "draws": 0
+      }
+    },
+    {
+      "id": "player-13",
+      "name": "Participant 13",
+      "seed": 13,
+      "team": "",
+      "avatar": null,
+      "stats": {
+        "wins": 0,
+        "losses": 0,
+        "draws": 0
+      }
+    },
+    {
+      "id": "player-14",
+      "name": "Participant 14",
+      "seed": 14,
+      "team": "",
+      "avatar": null,
+      "stats": {
+        "wins": 0,
+        "losses": 0,
+        "draws": 0
+      }
+    },
+    {
+      "id": "player-15",
+      "name": "Participant 15",
+      "seed": 15,
+      "team": "",
+      "avatar": null,
+      "stats": {
+        "wins": 0,
+        "losses": 0,
+        "draws": 0
+      }
+    },
+    {
+      "id": "player-16",
+      "name": "Participant 16",
+      "seed": 16,
+      "team": "",
+      "avatar": null,
+      "stats": {
+        "wins": 0,
+        "losses": 0,
+        "draws": 0
+      }
+    }
+  ],
+  "qualificationGroups": [],
+  "mainBracket": {
+    "rounds": [
+      {
+        "round": 1,
+        "name": "Huitièmes de finale",
+        "matches": [
+          {
+            "id": "r1_m1",
+            "participants": [
+              {
+                "id": "player-1",
+                "name": "Participant 1",
+                "seed": 1
+              },
+              {
+                "id": "player-2",
+                "name": "Participant 2",
+                "seed": 2
+              }
+            ],
+            "scores": [
+              0,
+              0
+            ],
+            "winner": null,
+            "status": "pending",
+            "scheduledTime": null,
+            "completedTime": null,
+            "round": 1,
+            "matchNumber": 1
+          },
+          {
+            "id": "r1_m2",
+            "participants": [
+              {
+                "id": "player-3",
+                "name": "Participant 3",
+                "seed": 3
+              },
+              {
+                "id": "player-4",
+                "name": "Participant 4",
+                "seed": 4
+              }
+            ],
+            "scores": [
+              0,
+              0
+            ],
+            "winner": null,
+            "status": "pending",
+            "scheduledTime": null,
+            "completedTime": null,
+            "round": 1,
+            "matchNumber": 2
+          },
+          {
+            "id": "r1_m3",
+            "participants": [
+              {
+                "id": "player-5",
+                "name": "Participant 5",
+                "seed": 5
+              },
+              {
+                "id": "player-6",
+                "name": "Participant 6",
+                "seed": 6
+              }
+            ],
+            "scores": [
+              0,
+              0
+            ],
+            "winner": null,
+            "status": "pending",
+            "scheduledTime": null,
+            "completedTime": null,
+            "round": 1,
+            "matchNumber": 3
+          },
+          {
+            "id": "r1_m4",
+            "participants": [
+              {
+                "id": "player-7",
+                "name": "Participant 7",
+                "seed": 7
+              },
+              {
+                "id": "player-8",
+                "name": "Participant 8",
+                "seed": 8
+              }
+            ],
+            "scores": [
+              0,
+              0
+            ],
+            "winner": null,
+            "status": "pending",
+            "scheduledTime": null,
+            "completedTime": null,
+            "round": 1,
+            "matchNumber": 4
+          },
+          {
+            "id": "r1_m5",
+            "participants": [
+              {
+                "id": "player-9",
+                "name": "Participant 9",
+                "seed": 9
+              },
+              {
+                "id": "player-10",
+                "name": "Participant 10",
+                "seed": 10
+              }
+            ],
+            "scores": [
+              0,
+              0
+            ],
+            "winner": null,
+            "status": "pending",
+            "scheduledTime": null,
+            "completedTime": null,
+            "round": 1,
+            "matchNumber": 5
+          },
+          {
+            "id": "r1_m6",
+            "participants": [
+              {
+                "id": "player-11",
+                "name": "Participant 11",
+                "seed": 11
+              },
+              {
+                "id": "player-12",
+                "name": "Participant 12",
+                "seed": 12
+              }
+            ],
+            "scores": [
+              0,
+              0
+            ],
+            "winner": null,
+            "status": "pending",
+            "scheduledTime": null,
+            "completedTime": null,
+            "round": 1,
+            "matchNumber": 6
+          },
+          {
+            "id": "r1_m7",
+            "participants": [
+              {
+                "id": "player-13",
+                "name": "Participant 13",
+                "seed": 13
+              },
+              {
+                "id": "player-14",
+                "name": "Participant 14",
+                "seed": 14
+              }
+            ],
+            "scores": [
+              0,
+              0
+            ],
+            "winner": null,
+            "status": "pending",
+            "scheduledTime": null,
+            "completedTime": null,
+            "round": 1,
+            "matchNumber": 7
+          },
+          {
+            "id": "r1_m8",
+            "participants": [
+              {
+                "id": "player-15",
+                "name": "Participant 15",
+                "seed": 15
+              },
+              {
+                "id": "player-16",
+                "name": "Participant 16",
+                "seed": 16
+              }
+            ],
+            "scores": [
+              0,
+              0
+            ],
+            "winner": null,
+            "status": "pending",
+            "scheduledTime": null,
+            "completedTime": null,
+            "round": 1,
+            "matchNumber": 8
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "name": "Quarts de finale",
+        "matches": [
+          {
+            "id": "r2_m1",
+            "participants": [
+              {
+                "placeholder": "Vainqueur 10"
+              },
+              {
+                "placeholder": "Vainqueur 11"
+              }
+            ],
+            "scores": [
+              0,
+              0
+            ],
+            "winner": null,
+            "status": "pending",
+            "scheduledTime": null,
+            "completedTime": null,
+            "round": 2,
+            "matchNumber": 1
+          },
+          {
+            "id": "r2_m2",
+            "participants": [
+              {
+                "placeholder": "Vainqueur 12"
+              },
+              {
+                "placeholder": "Vainqueur 13"
+              }
+            ],
+            "scores": [
+              0,
+              0
+            ],
+            "winner": null,
+            "status": "pending",
+            "scheduledTime": null,
+            "completedTime": null,
+            "round": 2,
+            "matchNumber": 2
+          },
+          {
+            "id": "r2_m3",
+            "participants": [
+              {
+                "placeholder": "Vainqueur 14"
+              },
+              {
+                "placeholder": "Vainqueur 15"
+              }
+            ],
+            "scores": [
+              0,
+              0
+            ],
+            "winner": null,
+            "status": "pending",
+            "scheduledTime": null,
+            "completedTime": null,
+            "round": 2,
+            "matchNumber": 3
+          },
+          {
+            "id": "r2_m4",
+            "participants": [
+              {
+                "placeholder": "Vainqueur 16"
+              },
+              {
+                "placeholder": "Vainqueur 17"
+              }
+            ],
+            "scores": [
+              0,
+              0
+            ],
+            "winner": null,
+            "status": "pending",
+            "scheduledTime": null,
+            "completedTime": null,
+            "round": 2,
+            "matchNumber": 4
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "name": "Demi-finales",
+        "matches": [
+          {
+            "id": "r3_m1",
+            "participants": [
+              {
+                "placeholder": "Vainqueur 20"
+              },
+              {
+                "placeholder": "Vainqueur 21"
+              }
+            ],
+            "scores": [
+              0,
+              0
+            ],
+            "winner": null,
+            "status": "pending",
+            "scheduledTime": null,
+            "completedTime": null,
+            "round": 3,
+            "matchNumber": 1
+          },
+          {
+            "id": "r3_m2",
+            "participants": [
+              {
+                "placeholder": "Vainqueur 22"
+              },
+              {
+                "placeholder": "Vainqueur 23"
+              }
+            ],
+            "scores": [
+              0,
+              0
+            ],
+            "winner": null,
+            "status": "pending",
+            "scheduledTime": null,
+            "completedTime": null,
+            "round": 3,
+            "matchNumber": 2
+          }
+        ]
+      },
+      {
+        "round": 4,
+        "name": "Finale",
+        "matches": [
+          {
+            "id": "r4_m1",
+            "participants": [
+              {
+                "placeholder": "Vainqueur 30"
+              },
+              {
+                "placeholder": "Vainqueur 31"
+              }
+            ],
+            "scores": [
+              0,
+              0
+            ],
+            "winner": null,
+            "status": "pending",
+            "scheduledTime": null,
+            "completedTime": null,
+            "round": 4,
+            "matchNumber": 1
+          }
+        ]
+      }
+    ],
+    "autoProgression": true,
+    "currentMatchId": null,
+    "completedMatches": 0,
+    "totalMatches": 15
+  },
+  "settings": {
+    "accessPassword": "api123456",
+    "adminPassword": "admin123456",
+    "moderatorAccessKeys": [],
+    "vMixAccessKeys": [],
+    "enableQualifications": false,
+    "publicAccess": false,
+    "display": {
+      "theme": "dark",
+      "primaryColor": "#ff6600",
+      "secondaryColor": "#00ccff",
+      "logo": null
+    },
+    "vMixSettings": {
+      "autoRefresh": true,
+      "refreshInterval": 5000
+    }
+  },
+  "locks": [],
+  "accessLog": []
+}
