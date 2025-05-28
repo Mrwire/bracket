@@ -1,0 +1,378 @@
+openapi: 3.0.0
+info:
+  title: Tournament Bracket Manager API
+  description: API pour la gestion d'un tournoi à élimination directe avec 16 participants
+  version: 1.0.0
+  contact:
+    email: admin@example.com
+servers:
+  - url: http://141.94.208.84/api
+    description: Serveur de production
+  - url: http://localhost:5000/api
+    description: Serveur de développement local
+
+tags:
+  - name: bracket
+    description: Opérations sur le bracket de tournoi
+  - name: participants
+    description: Opérations sur les participants
+  - name: matches
+    description: Opérations sur les matches
+
+paths:
+  /bracket:
+    get:
+      summary: Obtenir la structure complète du tournoi
+      tags:
+        - bracket
+      responses:
+        '200':
+          description: Structure complète du tournoi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rounds:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Round'
+                  participants:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Participant'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /bracket/match/{id}:
+    post:
+      summary: Mettre à jour le score d'un match et propager le gagnant
+      tags:
+        - matches
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID du match à mettre à jour
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  properties:
+                    teams:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Team'
+                    winner:
+                      type: integer
+                      description: Index du gagnant (0 ou 1)
+                  required:
+                    - teams
+                    - winner
+                - type: object
+                  properties:
+                    reset:
+                      type: boolean
+                      description: Si true, réinitialise le match
+                  required:
+                    - reset
+      responses:
+        '200':
+          description: Match mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Match'
+        '400':
+          description: Requête invalide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Match non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    delete:
+      summary: Réinitialiser un match et propager les changements
+      tags:
+        - matches
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID du match à réinitialiser
+      responses:
+        '200':
+          description: Match réinitialisé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Match'
+        '400':
+          description: Requête invalide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Match non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /bracket/participant:
+    post:
+      summary: Mettre à jour un participant (nom ou image)
+      tags:
+        - participants
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                oldName:
+                  type: string
+                  description: Nom actuel du participant
+                newName:
+                  type: string
+                  description: Nouveau nom du participant (optionnel)
+                image:
+                  type: string
+                  format: byte
+                  description: Image en base64 (optionnel)
+                removeImage:
+                  type: boolean
+                  description: Si true, supprime l'image du participant
+              required:
+                - oldName
+      responses:
+        '200':
+          description: Participant mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+        '400':
+          description: Requête invalide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /bracket/current-match:
+    get:
+      summary: Obtenir le match en cours (premier non complété)
+      tags:
+        - matches
+      responses:
+        '200':
+          description: Match en cours
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  round:
+                    type: string
+                  match:
+                    type: integer
+                  teams:
+                    type: array
+                    items:
+                      type: string
+                  score:
+                    type: array
+                    items:
+                      type: integer
+                  images:
+                    type: array
+                    items:
+                      type: string
+                      nullable: true
+        '404':
+          description: Aucun match en cours trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /bracket/final:
+    get:
+      summary: Obtenir le gagnant du tournoi
+      tags:
+        - bracket
+      responses:
+        '200':
+          description: Gagnant du tournoi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  winner:
+                    type: string
+                  score:
+                    type: array
+                    items:
+                      type: integer
+                  teams:
+                    type: array
+                    items:
+                      type: string
+                  images:
+                    type: array
+                    items:
+                      type: string
+                      nullable: true
+        '404':
+          description: Tournoi non terminé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /bracket/participants:
+    get:
+      summary: Obtenir la liste des participants
+      tags:
+        - participants
+      responses:
+        '200':
+          description: Liste des participants
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Participant'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Round:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Quarts de finale"
+        matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/Match'
+
+    Match:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 5
+        teams:
+          type: array
+          items:
+            $ref: '#/components/schemas/Team'
+        winner:
+          type: integer
+          nullable: true
+          example: 0
+        completed:
+          type: boolean
+          example: true
+
+    Team:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+          example: "Team Alpha"
+        score:
+          type: integer
+          example: 2
+        image:
+          type: string
+          nullable: true
+          example: "data:image/png;base64,..."
+
+    Participant:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Team Alpha"
+        image:
+          type: string
+          nullable: true
+          example: "data:image/png;base64,..."
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Failed to read bracket data"

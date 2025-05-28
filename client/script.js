@@ -7,7 +7,8 @@
 let bracketData = null;
 let isAdmin = false;
 let participantsData = [];
-const API_URL = '/api';
+// Déterminer si nous sommes en production ou en développement local
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? '/api' : 'http://141.94.208.84/api';
 const PASSWORD = 'api123456'; // Password for accessing the application
 const DEFAULT_PARTICIPANT_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZmNjYwMCI+PHBhdGggZD0iTTEyIDEyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00LTQgMS43OS00IDQgMS43OSA0IDQgNHptMCAyYy0yLjY3IDAtOCAxLjM0LTggNHYyaDE2di0yYzAtMi42Ni01LjMzLTQtOC00eiIvPjwvc3ZnPg==';
 
@@ -627,6 +628,13 @@ function createMatchForm(match) {
   cancelBtn.textContent = 'Annuler';
   btnContainer.appendChild(cancelBtn);
   
+  // Create reset button for admin to reset scores
+  const resetBtn = document.createElement('button');
+  resetBtn.type = 'button';
+  resetBtn.className = 'btn btn-danger';
+  resetBtn.textContent = 'Réinitialiser';
+  btnContainer.appendChild(resetBtn);
+  
   cancelBtn.addEventListener('click', () => {
     // Re-render the match to reset UI
     const matchEl = document.querySelector(`.match[data-id="${match.id}"]`);
@@ -636,6 +644,39 @@ function createMatchForm(match) {
       renderMatch(match, Array.from(bracketContainer.children).indexOf(parentEl)),
       matchEl
     );
+  });
+  
+  // Handle reset button click
+  resetBtn.addEventListener('click', async () => {
+    if (confirm('Êtes-vous sûr de vouloir réinitialiser ce match ? Cette action affectera également les rounds suivants.')) {
+      try {
+        resetBtn.textContent = 'Réinitialisation...';
+        resetBtn.disabled = true;
+        
+        // Call API to reset match
+        const response = await fetch(`${API_URL}/bracket/match/${match.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to reset match');
+        }
+        
+        // Show success message
+        showSuccess('Match réinitialisé avec succès');
+        
+        // Refresh the bracket data
+        fetchBracketData();
+      } catch (error) {
+        console.error('Error resetting match:', error);
+        showError('Erreur lors de la réinitialisation du match');
+        resetBtn.textContent = 'Réinitialiser';
+        resetBtn.disabled = false;
+      }
+    }
   });
   
   // Handle form submission
@@ -722,7 +763,11 @@ function renderParticipantsEditor() {
             <input type="file" class="file-input participant-image-input" accept="image/*">
           </label>
         </div>
-        <button type="submit" class="btn btn-primary">Update</button>
+        <div class="form-group buttons-container">
+          <button type="submit" class="btn btn-primary">Update</button>
+          ${participant.image && participant.image !== DEFAULT_PARTICIPANT_IMAGE ? 
+            `<button type="button" class="btn btn-danger remove-image-btn">Remove Image</button>` : ''}
+        </div>
       </form>
     `;
     
@@ -756,10 +801,32 @@ function renderParticipantsEditor() {
           // Update the preview
           const previewImg = participantItem.querySelector('.participant-image');
           previewImg.src = imageDataUrl;
+          
+          // Refresh the UI to show the remove button
+          renderParticipantsEditor();
         };
         reader.readAsDataURL(file);
       }
     });
+    
+    // Handle image removal
+    const removeImageBtn = participantItem.querySelector('.remove-image-btn');
+    if (removeImageBtn) {
+      removeImageBtn.addEventListener('click', async () => {
+        // Remove image from participant
+        await removeParticipantImage(participant.name);
+        
+        // Update in participants data
+        participantsData[index].image = DEFAULT_PARTICIPANT_IMAGE;
+        
+        // Update the preview
+        const previewImg = participantItem.querySelector('.participant-image');
+        previewImg.src = DEFAULT_PARTICIPANT_IMAGE;
+        
+        // Hide the remove button
+        removeImageBtn.style.display = 'none';
+      });
+    }
     
     participantsList.appendChild(participantItem);
   });
@@ -830,6 +897,39 @@ async function updateParticipantImage(name, imageUrl) {
   } catch (error) {
     console.error('Error updating participant image:', error);
     showError('Erreur lors de la mise à jour de l\'image');
+  }
+}
+
+/**
+ * Remove participant image from the bracket
+ * @param {string} name - Participant name
+ */
+async function removeParticipantImage(name) {
+  try {
+    // Call the API to remove the participant image
+    const response = await fetch(`${API_URL}/bracket/participant`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        oldName: name,
+        removeImage: true
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to remove participant image');
+    }
+    
+    // Show success message
+    showSuccess(`Image removed for "${name}"`);
+    
+    // Refresh the bracket data
+    fetchBracketData();
+  } catch (error) {
+    console.error('Error removing participant image:', error);
+    showError('Erreur lors de la suppression de l\'image');
   }
 }
 
